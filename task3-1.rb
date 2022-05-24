@@ -106,13 +106,13 @@ class Train
     return unless next_station
 
     @current_station += 1
-    {current_station: @current_station}
+    {current_station:  @current_station}
   end
 
   def down_action
     return unless previous_station
 
     @current_station -= 1
-    {current_station: @current_station}
+    {current_station:  @current_station}
   end
 end
