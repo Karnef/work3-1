@@ -78,14 +78,6 @@ class Train
     @num_wagons -= 1
   end
 
-  def move_up
-    up_action
-  end
-
-  def move_back
-    down_action
-  end
-
   def next_station
     return if @stations_straight.empty?
     return if @current_station + 1 >= @stations_straight.size
@@ -99,8 +91,6 @@ class Train
 
     @stations_straight[@current_station - 1]
   end
-
-  private
 
   def up_action
     return unless next_station
