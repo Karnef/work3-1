@@ -4,7 +4,6 @@ class Station
   def initialize(st_name)
     @st_name = st_name
     @all_trains = []
-    @trains_type = []
   end
 
   def add_train(train)
@@ -23,12 +22,11 @@ class Station
 end
 
 class Route
-  attr_reader :start_station, :end_station, :route_stations, :mid_stations
+  attr_reader :start_station, :end_station, :mid_stations
 
   def initialize(start_station, end_station)
     @start_station = start_station
     @end_station = end_station
-    @route_stations = []
     @mid_stations = []
   end
   
@@ -48,8 +46,7 @@ class Route
 end
 
 class Train
-attr_accessor :current_speed
-attr_reader :number, :type, :num_wagons
+  attr_reader :number, :type, :num_wagons, :current_speed
 
   def initialize(type, number, num_wagons, current_speed = 0, route)
     @route = route
@@ -57,9 +54,8 @@ attr_reader :number, :type, :num_wagons
     @number = number
     @num_wagons = num_wagons
     @current_speed = current_speed
-    @stations_straight = route&.route_stations ||= []
-    @stations_passed = []
-    @current_station = @stations_straight.shift
+    @stations_straight = route.route_stations
+    @current_station = 0
   end
   
   def up_speed
@@ -71,55 +67,52 @@ attr_reader :number, :type, :num_wagons
   end
   
   def add_num_wagons
-    return "you need slow down" unless @current_speed == 0
+    return unless @current_speed == 0
     
     @num_wagons += 1
   end
 
   def get_num_wagons
-    return "you need slow down" unless @current_speed == 0
+    return unless @current_speed == 0
 
     @num_wagons -= 1
   end
 
-  def move(action)
-    case action
-    when "up"
-      up_action
-    when "back"
-      down_action
-    else
-      puts "err"
-    end
+  def move_up
+    up_action
+  end
+
+  def move_back
+    down_action
   end
 
   def next_station
     return if @stations_straight.empty?
+    return if @current_station + 1 >= @stations_straight.size
 
-    @stations_straight.first
+    @stations_straight[@current_station + 1]
   end
 
   def previous_station
-    return if @stations_passed.empty?
+    return if @stations_straight.empty?
+    return unless @current_station.positive?
 
-    @stations_passed.last
+    @stations_straight[@current_station - 1]
   end
 
   private
 
   def up_action
-    return "Move to straight is not allowed" unless next_station
+    return unless next_station
 
-    @stations_passed << @current_station
-    @current_station = @stations_straight.shift
+    @current_station += 1
+    {current_station: @current_station}
   end
 
   def down_action
-    return "Move to back is not allowed" unless previous_station
-    
-    @stations_straight.unshift(@current_station)
-    @current_station = @stations_passed.pop
+    return unless previous_station
+
+    @current_station -= 1
+    {current_station: @current_station}
   end
 end
-
-
